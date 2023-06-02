@@ -42,12 +42,12 @@ int	set_philos(t_vars *vars)
 		return (1);
 	while (++i < vars->nb_philos)
 	{
-		vars->philos[i].l_t_e = 0;
-		vars->philos[i].philo = i + 1;
-		vars->philos[i].n_t_e = 0;
-		vars->philos[i].stat = THINK;
+		vars->philos[i].last_meal = 0;
+		vars->philos[i].philo_id = i + 1;
+		vars->philos[i].nb_meal = 0;
+		vars->philos[i].action = THINK;
 		vars->philos[i].vars = vars;
-		vars->philos[i].estat = NOTFULL;
+		vars->philos[i].fullness_stat = NOTFULL;
 		if (pthread_mutex_init(&(vars->msg), NULL) != 0)
 			return (1);
 		if (pthread_mutex_init(&(vars->death), NULL) != 0)
@@ -82,19 +82,19 @@ int	check_args(int ac, char **av)
 int	set_variables(int ac, char **av, t_vars *vars)
 {
 	vars->nb_isfull = 0;
-	vars->l_stat = ALIVE;
+	vars->life_stat = ALIVE;
 	vars->nb_philos = ft_atoi(av[1]);
-	vars->ttd = ft_atoi(av[2]);
-	vars->tte = ft_atoi(av[3]);
-	vars->tts = ft_atoi(av[4]);
-	vars->nb_tte = -1;
+	vars->time_to_die = ft_atoi(av[2]);
+	vars->time_to_eat = ft_atoi(av[3]);
+	vars->time_to_sleep = ft_atoi(av[4]);
+	vars->nb_time_to_eat = -1;
 	if (ac == 6)
 	{
-		vars->nb_tte = ft_atoi(av[5]);
-		if (vars->nb_tte <= 0)
+		vars->nb_time_to_eat = ft_atoi(av[5]);
+		if (vars->nb_time_to_eat <= 0)
 			return (1);
 	}
-	if (vars->nb_philos < 1 || vars->ttd < 0 || vars->tte < 0 || vars->tts < 0)
+	if (vars->nb_philos < 1 || vars->time_to_die < 0 || vars->time_to_eat < 0 || vars->time_to_sleep < 0)
 		return (1);
 	return (0);
 }

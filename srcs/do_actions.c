@@ -14,54 +14,54 @@
 
 void	go_eat(t_vars *vars, t_philos *philo)
 {
-	philo->l_t_e = ft_get_time(vars);
-	if (vars->nb_tte != -1)
+	philo->last_meal = get_time(vars);
+	if (vars->nb_time_to_eat != -1)
 	{
-		philo->n_t_e++;
-		if (philo->n_t_e == vars->nb_tte)
+		philo->nb_meal++;
+		if (philo->nb_meal == vars->nb_time_to_eat)
 		{
-			philo->estat = ISFULL;
+			philo->fullness_stat = ISFULL;
 			vars->nb_isfull++;
 		}
 	}
-	philo->stat = EAT;
-	print_status(philo, EAT, ft_get_time(vars));
-	intellisleep(vars->tte, vars);
+	philo->action = EAT;
+	print_status(philo, EAT, get_time(vars));
+	intellisleep(vars->time_to_eat, vars);
 	return ;
 }
 
-void	go_to_sleep(t_vars *vars, t_philos *philo, int i)
+void	go_to_sleep(t_vars *vars, t_philos *philo, int id)
 {
-	philo->stat = SLEEP;
-	philo->fdstat = UFORKED;
-	philo->fgstat = UFORKED;
-	pthread_mutex_unlock(&(vars->forks[i]));
+	philo->action = SLEEP;
+	philo->right_fork_stat = UFORKED;
+	philo->left_fork_stat = UFORKED;
+	pthread_mutex_unlock(&(vars->forks[id]));
 	if (philo->philo == vars->nb_philos)
 		pthread_mutex_unlock(&(vars->forks[0]));
 	else
-		pthread_mutex_unlock(&(vars->forks[i + 1]));
-	print_status(philo, SLEEP, ft_get_time(vars));
-	intellisleep(vars->tts, vars);
+		pthread_mutex_unlock(&(vars->forks[id + 1]));
+	print_status(philo, SLEEP, get_time(vars));
+	intellisleep(vars->time_to_sleep, vars);
 	return ;
 }
 
-void	take_forks(t_vars *vars, t_philos *philo, int i)
+void	take_forks(t_vars *vars, t_philos *philo, int id)
 {
-	pthread_mutex_lock(&(vars->forks[i]));
-	philo->fdstat = RFORKED;
-	print_status(philo, RFORKED, ft_get_time(vars));
+	pthread_mutex_lock(&(vars->forks[id]));
+	philo->right_fork_stat = RFORKED;
+	print_status(philo, RFORKED, get_time(vars));
 	if (philo->philo == vars->nb_philos)
 	{
 		pthread_mutex_lock(&(vars->forks[0]));
-		philo->fgstat = LFORKED;
-		print_status(philo, LFORKED, ft_get_time(vars));
+		philo->left_fork_stat = LFORKED;
+		print_status(philo, LFORKED, get_time(vars));
 	}
 	else
 	{
-		pthread_mutex_lock(&(vars->forks[i + 1]));
-		philo->fgstat = LFORKED;
-		print_status(philo, LFORKED, ft_get_time(vars));
+		pthread_mutex_lock(&(vars->forks[id + 1]));
+		philo->left_fork_stat = LFORKED;
+		print_status(philo, LFORKED, get_time(vars));
 	}
-	if (philo->fgstat == LFORKED && philo->fdstat == RFORKED)
-		philo->stat = FFORKED;
+	if (philo->left_fork_stat == LFORKED && philo->right_fork_stat == RFORKED)
+		philo->action = FFORKED;
 }

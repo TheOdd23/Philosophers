@@ -16,18 +16,18 @@ void	print_status(t_philos *philo, int status, long long time)
 {
 	pthread_mutex_lock(&(philo->vars->msg));
 	if (status == EAT)
-		printf("%lld Philosophe %d is eating\n", philo->l_t_e, philo->philo);
+		printf("%lld Philosophe %d is eating\n", philo->last_meal, philo->philo_id);
 	else if (status == SLEEP)
-		printf("%lld Philosophe %d is sleeping\n", time, philo->philo);
+		printf("%lld Philosophe %d is sleeping\n", time, philo->philo_id);
 	if (status == THINK)
-		printf("%lld Philosophe %d is thinking\n", time, philo->philo);
+		printf("%lld Philosophe %d is thinking\n", time, philo->philo_id);
 	if (status == LFORKED || status == RFORKED)
-		printf("%lld Philosophe %d is taking a fork\n", time, philo->philo);
+		printf("%lld Philosophe %d is taking a fork\n", time, philo->philo_id);
 	if (status == DEAD)
-		printf("%lld Philosophe %d died\n", time, philo->philo);
+		printf("%lld Philosophe %d died\n", time, philo->philo_id);
 	pthread_mutex_unlock(&(philo->vars->msg));
 }
-
+/*Revoir pertinence ALIVE à chaque action*/
 void	*routine(void *arg)
 {
 	t_philos	*philo;
@@ -35,20 +35,20 @@ void	*routine(void *arg)
 
 	philo = (t_philos *)arg;
 	vars = philo->vars;
-	if (philo->philo % 2 == 0)
+	if (philo->philo_id % 2 == 0)
 		usleep(15000);
-	while (vars->l_stat != DEAD)
+	while (vars->life_stat != DEAD)
 	{
-		if (philo->stat == THINK && vars->l_stat == ALIVE
-			&& philo->estat != ISFULL)
-			take_forks(vars, philo, philo->philo - 1);
-		else if (philo->stat == FFORKED && vars->l_stat == ALIVE)
+		if (philo->action == THINK && vars->life_stat == ALIVE
+			&& philo->fullness_stat != ISFULL)
+			take_forks(vars, philo, philo->philo_id - 1);
+		else if (philo->action == FFORKED && vars->life_stat == ALIVE)
 			go_eat(philo->vars, philo);
-		else if (philo->stat == EAT && vars->l_stat == ALIVE)
-			go_to_sleep(vars, philo, philo->philo - 1);
-		else if (philo->stat == SLEEP && vars->l_stat == ALIVE)
+		else if (philo->action == EAT && vars->life_stat == ALIVE)
+			go_to_sleep(vars, philo, philo->philo_id - 1);
+		else if (philo->action == SLEEP && vars->life_stat == ALIVE)
 		{
-			philo->stat = THINK;
+			philo->action = THINK;
 			print_status(philo, THINK, ft_get_time(vars));
 		}
 	}
@@ -62,10 +62,10 @@ int	check_death(t_vars *vars, t_philos *philo)
 	i = 0;
 	while (1)
 	{
-		if (ft_get_time(vars) - philo[i].l_t_e >= vars->ttd)
+		if (get_time(vars) - philo[i].last_meal >= vars->time_to_die)
 		{
 			pthread_mutex_lock(&(philo[i].vars->death));
-			vars->l_stat = DEAD;
+			vars->life_stat = DEAD;
 			usleep(500);
 			print_status(philo, DEAD, ft_get_time(vars));
 			pthread_mutex_unlock(&(philo[i].vars->death));
@@ -85,7 +85,7 @@ int	philo(t_vars *vars)
 	int	i;
 
 	i = -1;
-	ft_begin_time(vars);
+	begin_time(vars);
 	while (++i < vars->nb_philos)
 		pthread_create(&vars->philos[i].t_id, NULL, &routine, &vars->philos[i]);
 	if (check_death(vars, vars->philos) == 1)

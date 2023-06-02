@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <limits.h>
 
 # define EAT 1
 # define SLEEP 2
@@ -26,50 +27,37 @@
 # define ALIVE 5
 # define LFORKED 6
 # define RFORKED 7
-# define FFORKED 10
-# define UFORKED 11
-# define ISFULL 8
-# define NOTFULL 9
+# define FFORKED 8
+# define UFORKED 9
+# define ISFULL 10
+# define NOTFULL 11
 
 typedef struct s_vars	t_vars;
 
-/* n_t_e = nb_time_ate */
-/* l_t_e = last_time_eat */
-/* t_id = thread_id */
-/* fdstat = status fourchette droite */
-/* fgstat = status fourchette gauche */
-/* estat = Eat statut : full || not full */
 typedef struct s_philos
 {
-	int				philo;
-	int				stat;
-	int				fdstat;
-	int				fgstat;
-	int				n_t_e;
-	int				estat;
-	long long		l_t_e;
+	int				philo_id;
+	int				action;
+	int				right_fork_stat;
+	int				left_fork_stat;
+	int				nb_meal;
+	int				fullness_stat;
+	long long		last_meal;
 	pthread_t		t_id;
 	t_vars			*vars;
 }	t_philos;
 
-/* l_stat = life_status */
-/* ttd = time to die */
-/* tte = time to eat */
-/* tts = time to sleep */
-/* c_time = current time */
-/* b_time = begin time */
-/* nb_tte = number of time to eat */
 typedef struct s_vars
 {
-	int				l_stat;
+	int				life_stat;
 	int				nb_philos;
-	long long		ttd;
-	long long		tte;
-	long long		tts;
+	long long		time_to_die;
+	long long		time_to_eat;
+	long long		time_to_sleep;
 	int				nb_isfull;
-	int				nb_tte;
-	long long		c_time;
-	long long		b_time;
+	int				nb_time_to_eat;
+	long long		current_time;
+	long long		beggining_time;
 	pthread_mutex_t	death;
 	pthread_mutex_t	msg;
 	pthread_mutex_t	*forks;
@@ -79,8 +67,8 @@ typedef struct s_vars
 int			ft_atoi(const char *str);
 int			ft_is_digit(int c);
 int			philo(t_vars *vars);
-long long	ft_get_time(t_vars *vars);
-void		ft_begin_time(t_vars *vars);
+long long	get_time(t_vars *vars);
+void		begin_time(t_vars *vars);
 void		take_forks(t_vars *vars, t_philos *philo, int i);
 void		go_eat(t_vars *vars, t_philos *philo);
 void		go_to_sleep(t_vars *vars, t_philos *philo, int i);

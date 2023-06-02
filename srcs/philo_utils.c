@@ -36,42 +36,42 @@ int	ft_atoi(const char *str)
 		nb = (nb * 10) + (str[i] - '0');
 		i++;
 	}
-	if (nb * neg > 2147483647 || nb * neg < -2147483648)
+	if (nb * neg > INT_MAX || nb * neg < INT_MIN)
 		return (-1);
 	return (nb * neg);
 }
 
-int	ft_is_digit(int c)
+int	ft_is_digit(int character)
 {
-	if (c >= '0' && c <= '9')
+	if (character >= '0' && character <= '9')
 		return (1);
 	else
 		return (0);
 }
 
-void	ft_begin_time(t_vars *vars)
+void	begin_time(t_vars *vars)
 {
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	vars->b_time = ((time.tv_sec * 1000)
-			+ (time.tv_usec / 1000));
+	vars->beggining_time = ((time.tv_sec * 1000)
+		+ (time.tv_usec / 1000));
 }
 
-long long	ft_get_time(t_vars *vars)
+long long	get_time(t_vars *vars)
 {
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
 	return (((time.tv_sec * 1000)
-			+ (time.tv_usec / 1000)) - vars->b_time);
+			+ (time.tv_usec / 1000)) - vars->beggining_time);
 }
 
 void	intellisleep(long long timetosleep, t_vars *vars)
 {
-	long long	i;
+	long long	start_time;
 
-	i = ft_get_time(vars);
-	while (ft_get_time(vars) - i < timetosleep)
+	start_time = get_time(vars);
+	while (get_time(vars) - start_time < timetosleep)
 		usleep(100);
 }
