@@ -49,7 +49,7 @@ void	*routine(void *arg)
 		else if (philo->action == SLEEP && vars->life_stat == ALIVE)
 		{
 			philo->action = THINK;
-			print_status(philo, THINK, ft_get_time(vars));
+			print_status(philo, THINK, get_time(vars));
 		}
 	}
 	return (0);
@@ -67,7 +67,7 @@ int	check_death(t_vars *vars, t_philos *philo)
 			pthread_mutex_lock(&(philo[i].vars->death));
 			vars->life_stat = DEAD;
 			usleep(500);
-			print_status(philo, DEAD, ft_get_time(vars));
+			print_status(philo, DEAD, get_time(vars));
 			pthread_mutex_unlock(&(philo[i].vars->death));
 			return (1);
 		}

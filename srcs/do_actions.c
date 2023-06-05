@@ -36,7 +36,7 @@ void	go_to_sleep(t_vars *vars, t_philos *philo, int id)
 	philo->right_fork_stat = UFORKED;
 	philo->left_fork_stat = UFORKED;
 	pthread_mutex_unlock(&(vars->forks[id]));
-	if (philo->philo == vars->nb_philos)
+	if (philo->philo_id == vars->nb_philos)
 		pthread_mutex_unlock(&(vars->forks[0]));
 	else
 		pthread_mutex_unlock(&(vars->forks[id + 1]));
@@ -50,7 +50,7 @@ void	take_forks(t_vars *vars, t_philos *philo, int id)
 	pthread_mutex_lock(&(vars->forks[id]));
 	philo->right_fork_stat = RFORKED;
 	print_status(philo, RFORKED, get_time(vars));
-	if (philo->philo == vars->nb_philos)
+	if (philo->philo_id == vars->nb_philos)
 	{
 		pthread_mutex_lock(&(vars->forks[0]));
 		philo->left_fork_stat = LFORKED;
